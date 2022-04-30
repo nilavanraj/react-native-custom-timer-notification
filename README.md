@@ -15,7 +15,15 @@ import { multiply } from "react-native-custom-timer-notification";
 
 // ...
 
-const result = await multiply(3, 7);
+const result = await TimerNotification({
+      eventData: JSON.stringify("notificationOpen?.data"),
+      title: "My notification",
+      body:"Much longer text that cannot fit one line... ",
+      id: 1,
+      sec:60,
+      remove:false, // optional 
+      foreground:false,
+     })
 ```
 
 ## Contributing
