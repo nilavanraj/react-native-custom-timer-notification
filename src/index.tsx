@@ -17,6 +17,6 @@ const CustomTimerNotification = NativeModules.CustomTimerNotification
       }
     );
 
-export function multiply(a: number, b: number): Promise<number> {
-  return CustomTimerNotification.multiply(a, b);
+export function TimerNotification(a: object): Promise<number> {
+  return CustomTimerNotification.TimerNotification(a);
 }

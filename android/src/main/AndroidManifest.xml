@@ -1,4 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.reactnativecustomtimernotification">
+  xmlns:tools="http://schemas.android.com/tools"
+  package="com.reactnativecustomtimernotification">
 
 </manifest>

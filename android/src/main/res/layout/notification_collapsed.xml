@@ -1,0 +1,50 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:maxHeight="120dp"
+    android:weightSum="100"
+  android:id="@+id/linearLayout"
+
+  android:orientation="horizontal">
+
+        <LinearLayout
+        android:layout_width="0dp"
+          android:layout_weight="95"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        >
+        <TextView
+          android:text="notificationOpen.data.title"
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            style="@style/TextAppearance.Compat.Notification.Title"
+            />
+
+        <TextView
+          android:text="Because the text is long textview getting bigger So You set the singleLine true of your textView then it will work"
+            android:id="@+id/text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="4"
+            style="@style/TextAppearance.Compat.Notification"
+
+            />
+
+    </LinearLayout>
+
+  <TextView
+    android:id="@+id/timer"
+    style="@style/TextAppearance.Compat.Notification.Title"
+    android:layout_weight="5"
+
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:gravity="right|center_vertical"
+    android:maxLines="1"
+
+    android:text="timer"
+    android:textSize="20dp" />
+</LinearLayout>
