@@ -101,7 +101,7 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
       val onDismissPendingIntent =
         PendingIntent.getBroadcast(myContext, 0, onCancelIntent, 0)
 
-      val notificationLayout = RemoteViews(packageName, R.layout.notification_collapsed);
+      val notificationLayout = RemoteViews(packageName, R.layout.notification_open);
       notificationLayout.setTextViewText(R.id.title,title)
       notificationLayout.setTextViewText(R.id.text,body)
       notificationLayout.setTextViewText(R.id.timer,remainingTime)

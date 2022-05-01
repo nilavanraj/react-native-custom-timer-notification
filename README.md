@@ -1,6 +1,6 @@
 # react-native-custom-timer-notification
 
-custom timer notification for react native 🔔
+Custom timer notification for React Native Android 🔔
 ![ezgif com-gif-maker](https://user-images.githubusercontent.com/58332892/166133982-effe321c-a0fd-4315-bb29-cc7ee29d0bd4.gif)
 
 
@@ -29,13 +29,13 @@ AndroidManifest
 ```sec``` Time in seconds <br>
 
 ```js
-import { TimerNotification } from "react-native-custom-timer-notification";
+import { TimerNotification, onEvent } from "react-native-custom-timer-notification";
 
 // ...
 // onclick and cancel listner
-DeviceEventEmitter.addListener("notificationClick",event=>{
+onEvent(event=>{
 console.log(event)
-})
+});
 
 const result = await TimerNotification({
       payload: JSON.stringify("notificationOpen?.data"), 

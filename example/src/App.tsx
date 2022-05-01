@@ -1,10 +1,10 @@
 import * as React from 'react';
 
 import { StyleSheet, View, Text,DeviceEventEmitter } from 'react-native';
-import { TimerNotification } from 'react-native-custom-timer-notification';
-DeviceEventEmitter.addListener("notificationClick",event=>{
+import { TimerNotification,onEvent } from 'react-native-custom-timer-notification';
+onEvent(event=>{
 console.log(event)
-})
+});
 export default function App() {
   const [result, setResult] = React.useState<number | undefined>();
 

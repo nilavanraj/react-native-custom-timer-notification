@@ -1,4 +1,4 @@
-import { NativeModules, Platform } from 'react-native';
+import { NativeModules, Platform, DeviceEventEmitter } from 'react-native';
 
 const LINKING_ERROR =
   `The package 'react-native-custom-timer-notification' doesn't seem to be linked. Make sure: \n\n` +
@@ -17,6 +17,14 @@ const CustomTimerNotification = NativeModules.CustomTimerNotification
       }
     );
 
-export function TimerNotification(a: object): Promise<number> {
-  return CustomTimerNotification.TimerNotification(a);
+export function TimerNotification(a: object): any {
+  if (Platform.OS === 'android')
+    return CustomTimerNotification.TimerNotification(a);
+  return null;
+}
+
+export function onEvent(listener: Function): void {
+  DeviceEventEmitter.addListener('notificationClick', (event) =>
+    listener(event)
+  );
 }
