@@ -37,7 +37,7 @@ onEvent(event=>{
 console.log(event)
 });
 
-const result = await TimerNotification({
+TimerNotification({
       payload: JSON.stringify("notificationOpen?.data"), 
       title: "My notification",
       body:"Much longer text that cannot fit one line... ",
