@@ -54,7 +54,7 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
           params.putInt("id", extras!!.getInt("id"))
           params.putString("action", extras!!.getString("action"))
           params.putString("payload", extras!!.getString("payload"))
-          sendEvent("sysModuleNotificationClick", params)
+          sendEvent("notificationClick", params)
         } catch (e: Exception) {
           println(e)
         }
@@ -84,20 +84,20 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
     fun notificationPop(objectData:ReadableMap,remainingTime:String,visbleTimer:Boolean):NotificationCompat.Builder{
       val title = objectData.getString("title");
       val body = objectData.getString("body");
-      val eventData =  objectData.getString("eventData");
+      val payload =  objectData.getString("payload");
       val id =objectData.getInt("id");
 
       val intent = Intent(myContext, NotificationEventReceiver::class.java)
       intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
       intent.putExtra("id",id);
       intent.putExtra("action","press");
-      intent.putExtra("payload",eventData);
+      intent.putExtra("payload",payload);
       val pendingIntent = PendingIntent.getBroadcast(myContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
       val onCancelIntent = Intent(myContext, OnClickBroadcastReceiver::class.java)
       onCancelIntent.putExtra("id",id);
       onCancelIntent.putExtra("action","cancel");
-      onCancelIntent.putExtra("payload",eventData);
+      onCancelIntent.putExtra("payload",payload);
       val onDismissPendingIntent =
         PendingIntent.getBroadcast(myContext, 0, onCancelIntent, 0)
 

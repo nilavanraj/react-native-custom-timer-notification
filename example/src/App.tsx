@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { StyleSheet, View, Text,DeviceEventEmitter } from 'react-native';
 import { TimerNotification } from 'react-native-custom-timer-notification';
-DeviceEventEmitter.addListener("sysModuleNotificationClick",event=>{
+DeviceEventEmitter.addListener("notificationClick",event=>{
 console.log(event)
 })
 export default function App() {
@@ -10,11 +10,11 @@ export default function App() {
 
   React.useEffect(() => {
     TimerNotification({
-      eventData: JSON.stringify("notificationOpen?.data"),
+      payload: JSON.stringify("notificationOpen?.data"),
       title: "My notification",
       body:"Much longer text that cannot fit one line... ",
       id: 160211114,
-      sec:60,
+      sec:1800,
       remove:false, // optional 
       foreground:false,
 

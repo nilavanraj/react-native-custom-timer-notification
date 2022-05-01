@@ -44,7 +44,7 @@ class ForegroundService : Service() {
 
     val title = intent?.getStringExtra("title");
     val body = intent?.getStringExtra("body");
-    val eventData =  intent?.getStringExtra("eventData");
+    val payload =  intent?.getStringExtra("payload");
     val id:Int? = intent?.getIntExtra("id",0)
     println(id)
 
@@ -55,14 +55,14 @@ class ForegroundService : Service() {
     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
     intent.putExtra("id",id);
     intent.putExtra("action","press");
-    intent.putExtra("payload",eventData);
+    intent.putExtra("payload",payload);
     val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
 
     val onCancelIntent = Intent(this, OnClickBroadcastReceiver::class.java)
     onCancelIntent.putExtra("id",id);
     onCancelIntent.putExtra("action","cancel");
-    onCancelIntent.putExtra("payload",eventData);
+    onCancelIntent.putExtra("payload",payload);
     val onDismissPendingIntent =
       PendingIntent.getBroadcast(this, 0, onCancelIntent, 0)
 
