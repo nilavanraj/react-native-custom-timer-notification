@@ -1,6 +1,8 @@
 # react-native-custom-timer-notification
 
 custom timer notification for react native 🔔
+![ezgif com-gif-maker](https://user-images.githubusercontent.com/58332892/166133982-effe321c-a0fd-4315-bb29-cc7ee29d0bd4.gif)
+
 
 ## Installation
 
@@ -8,7 +10,6 @@ custom timer notification for react native 🔔
 npm install react-native-custom-timer-notification
 ```
 
-      <!-- <service android:name="com.reactnativecustomtimernotification.ForegroundService"/> -->
 AndroidManifest
 ```xml
 
@@ -21,14 +22,14 @@ AndroidManifest
       <service android:name="com.reactnativecustomtimernotification.ForegroundService"/>
 ```
 ## Usage
-```payload``` sent will be received when click or canceled
-```title``` Title of the notification
-```body``` Body of the notification
-```id```  unique number
-```sec``` Time in seconds
+```payload``` sent will be received when click or canceled <br>
+```title``` Title of the notification <br>
+```body``` Body of the notification <br>
+```id```  unique number <br>
+```sec``` Time in seconds <br>
 
 ```js
-import { multiply } from "react-native-custom-timer-notification";
+import { TimerNotification } from "react-native-custom-timer-notification";
 
 // ...
 // onclick and cancel listner
