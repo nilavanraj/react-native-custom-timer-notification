@@ -14,7 +14,7 @@ export default function App() {
       title: "My notification",
       body:"Much longer text that cannot fit one line... ",
       id: 160211114,
-      sec:1800,
+      sec:1,
       remove:false, // optional 
       foreground:false,
 
