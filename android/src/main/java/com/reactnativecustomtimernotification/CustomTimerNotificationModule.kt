@@ -9,29 +9,32 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.content.pm.PackageManager
 import android.graphics.Color
+import android.icu.text.SimpleDateFormat
+import android.icu.util.Calendar
 import android.os.Build
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.SystemClock
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import com.facebook.react.bridge.Callback
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
 import com.facebook.react.bridge.ReactMethod
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
-import org.json.JSONObject
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.Arguments;
+import java.util.*
+import kotlin.time.milliseconds
 
 
 class CustomTimerNotificationModule: ReactContextBaseJavaModule {
   var loading : Boolean = false;
-  var firstForegound : Boolean = true;
-  var ifCancel = false;
+  var foregound : Boolean = false;
+
   lateinit var notificationManager: NotificationManager
   lateinit var builder: Notification.Builder
   val channelId:String = "255"
@@ -47,13 +50,13 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
     myContext.registerReceiver(object : BroadcastReceiver() {
       override fun onReceive(context: Context, intent: Intent) {
         try {
-
-          ifCancel = true
           val extras = intent.extras
           val params: WritableMap = Arguments.createMap()
           params.putInt("id", extras!!.getInt("id"))
           params.putString("action", extras!!.getString("action"))
           params.putString("payload", extras!!.getString("payload"))
+          removeNotification(extras!!.getInt("id"),foregound)
+
           sendEvent("notificationClick", params)
         } catch (e: Exception) {
           println(e)
@@ -87,6 +90,17 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
       val payload =  objectData.getString("payload");
       val id =objectData.getInt("id");
 
+      val datetime = objectData.getString("date")
+      val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH)
+
+      val startTime = SystemClock.elapsedRealtime()
+      val endTime: Calendar = Calendar.getInstance()
+      endTime.time = sdf.parse(datetime)
+
+      val now = Date()
+      val elapsed: Long = now.getTime() - endTime.timeInMillis
+      val remainingTime = startTime - elapsed
+
       val intent = Intent(myContext, NotificationEventReceiver::class.java)
       intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
       intent.putExtra("id",id);
@@ -104,16 +118,15 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
       val notificationLayout = RemoteViews(packageName, R.layout.notification_open);
       notificationLayout.setTextViewText(R.id.title,title)
       notificationLayout.setTextViewText(R.id.text,body)
-      notificationLayout.setTextViewText(R.id.timer,remainingTime)
+
+     // notificationLayout.setTextViewText(R.id.timer,remainingTime)
+      notificationLayout.setChronometerCountDown(R.id.simpleChronometer, true);
+      notificationLayout.setChronometer(R.id.simpleChronometer, remainingTime, ("%sM:%sS"), true);
+
 
 //      try {
 //        notificationLayout.setTextColor(R.id.timer , Color.parseColor(objectData.getString("timeColor")));
 //      } catch (e:Exception){}
-
-      if(visbleTimer){
-        notificationLayout.setViewVisibility (R.id.timer,
-          View.INVISIBLE)
-      }
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val notificationChannel =
@@ -127,7 +140,6 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
           val notificationBuilder:NotificationCompat.Builder =
             NotificationCompat.Builder(myContext,channelId)
           notificationBuilder.setAutoCancel(true)
-            .setWhen(System.currentTimeMillis())
             .setSmallIcon(myContext.getResources().getIdentifier("ic_launcher", "mipmap", myContext.getPackageName()))
             .setContentTitle(title)
             .setContentText(body)
@@ -137,70 +149,54 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
             .setContentIntent(pendingIntent)
             .setDeleteIntent(onDismissPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-          return notificationBuilder
+            .setWhen(endTime.getTimeInMillis());
+      val handler = Handler()
+      handler.postDelayed({
+        notificationLayout.setChronometer(R.id.simpleChronometer, remainingTime, ("%sM:%sS"), false);
+        try {
+          val remove =objectData.getBoolean("remove");
+          val foreground =objectData.getBoolean("foreground");
+          if(remove){
+            removeNotification(id,foreground)
+          } else {
+               notificationLayout.setViewVisibility (R.id.simpleChronometer,
+                View.INVISIBLE)
+          }
+        } catch (e:Exception){}
 
+        notificationBuilder.setCustomContentView(notificationLayout)
+        notificationManager.notify(id,notificationBuilder.build())
+      }, Math.abs(elapsed))
+          return notificationBuilder
   }
+
 fun updatePop(objectData:ReadableMap,remainingTime:String,visbleTimer:Boolean){
   val id =objectData.getInt("id");
   val notificationBuilder:NotificationCompat.Builder  = notificationPop(objectData,remainingTime,visbleTimer)
   notificationManager.notify(id,notificationBuilder.build())
 }
   fun removeNotification (id:Int,foreground:Boolean) {
-
     val notificationManager = myContext.getSystemService(NotificationManager::class.java)
     if(foreground)
     ForegroundService.stopService(myContext)
     else
     notificationManager.cancel( id ) ;
   }
-  fun countdown(objectData:ReadableMap,sec:Int) {
-    val secLong = sec.toLong()*1000;
-    val id =objectData.getInt("id");
-    val foreground =objectData.getBoolean("foreground");
-
-    object : CountDownTimer(secLong, 1000) {
-      override fun onTick(millisUntilFinished: Long) {
-        val remainingSec:Int = (millisUntilFinished / 1000).toInt()
-        val min = convert((remainingSec/60).toInt().toString())
-        val secInMin = convert((remainingSec%60).toInt().toString())
-        val remainingTime:String = "$min : $secInMin"
-        if(ifCancel){
-          cancel();
-          if(foreground){
-            ForegroundService.stopService(myContext)
-          }
-        }
-        else{
-          if(foreground&&firstForegound){
-            firstForegound=false
-            ForegroundService.startService(myContext,objectData,remainingTime)
-          } else
-          updatePop(objectData,remainingTime,false)
-
-        }
-      }
-
-      override fun onFinish() {
-        try {
-          val remove =objectData.getBoolean("remove");
-          if(remove){
-            removeNotification(id,foreground)
-          } else {
-            println("onFinish")
-            updatePop(objectData,"",true)
-          }
-        } catch (e:Exception){}
-
-      }
-    }.start()
-  }
-
     @ReactMethod
     fun TimerNotification(objectData:ReadableMap) {
-      firstForegound=true;
-      ifCancel = false;
-      val sec =objectData.getInt("sec");
-      countdown(objectData,sec)
+
+      val remainingSec:Int = (10000 / 1000).toInt()
+      val min = convert((remainingSec/60).toInt().toString())
+      val secInMin = convert((remainingSec%60).toInt().toString())
+      val remainingTime:String = "$min : $secInMin"
+
+      val foreground =objectData.getBoolean("foreground");
+
+      if(foreground){
+        foregound=true;
+        ForegroundService.startService(myContext,objectData)
+      } else
+      updatePop(objectData,remainingTime,false)
       //promise.resolve(a * b)
 
     }

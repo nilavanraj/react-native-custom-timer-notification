@@ -35,8 +35,9 @@
 
     </LinearLayout>
 
-  <TextView
-    android:id="@+id/timer"
+
+  <Chronometer
+    android:id="@+id/simpleChronometer"
     style="@style/TextAppearance.Compat.Notification.Title"
     android:layout_weight="5"
 

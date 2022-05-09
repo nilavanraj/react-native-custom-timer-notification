@@ -1,6 +1,6 @@
 {
   "name": "react-native-custom-timer-notification",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "custom timer notification",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -33,8 +33,10 @@
   },
   "keywords": [
     "react-native",
-    "ios",
-    "android"
+    "android",
+    "notification",
+    "custom",
+    "Timer"
   ],
   "repository": "https://github.com/nilavanraj/react-native-custom-timer-notification",
   "author": "Nilavan Raj <58332892+nilavanraj@users.noreply.github.com> (https://github.com/nilavanraj)",
