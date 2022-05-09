@@ -18,34 +18,34 @@ const CustomTimerNotification = NativeModules.CustomTimerNotification
     );
 
 export function TimerNotification(a: object): any {
-  const parseDate = (rawDate) => {
+  const parseDate = (rawDate: any) => {
     let hours;
     let day;
     let month;
-  
+
     if (rawDate.getHours().toString().length === 1) {
       hours = `0${rawDate.getHours()}`;
     } else {
       hours = `${rawDate.getHours()}`;
     }
-  
+
     if (rawDate.getDate().toString().length === 1) {
       day = `0${rawDate.getDate()}`;
     } else {
       day = `${rawDate.getDate()}`;
     }
-  
+
     if (rawDate.getMonth().toString().length === 1) {
       month = `0${rawDate.getMonth() + 1}`;
     } else {
       month = `${rawDate.getMonth() + 1}`;
     }
-  
+
     return `${day}-${month}-${rawDate.getFullYear()} ${hours}:${rawDate.getMinutes()}:${rawDate.getSeconds()}`;
   };
-  const data = a;
-  data.date = parseDate(data.date)
-  
+  const data: any = a;
+  data.date = parseDate(data.date);
+
   if (Platform.OS === 'android')
     return CustomTimerNotification.TimerNotification(data);
   return null;

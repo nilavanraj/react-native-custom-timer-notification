@@ -121,7 +121,7 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
 
      // notificationLayout.setTextViewText(R.id.timer,remainingTime)
       notificationLayout.setChronometerCountDown(R.id.simpleChronometer, true);
-      notificationLayout.setChronometer(R.id.simpleChronometer, remainingTime, ("%sM:%sS"), true);
+      notificationLayout.setChronometer(R.id.simpleChronometer, remainingTime, ("%tM:%tS"), true);
 
 
 //      try {
@@ -152,7 +152,8 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
             .setWhen(endTime.getTimeInMillis());
       val handler = Handler()
       handler.postDelayed({
-        notificationLayout.setChronometer(R.id.simpleChronometer, remainingTime, ("%sM:%sS"), false);
+        notificationLayout.setChronometerCountDown(R.id.simpleChronometer, true);
+        notificationLayout.setChronometer(R.id.simpleChronometer, remainingTime, ("%tM:%tS"), false);
         try {
           val remove =objectData.getBoolean("remove");
           val foreground =objectData.getBoolean("foreground");
@@ -162,7 +163,9 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
                notificationLayout.setViewVisibility (R.id.simpleChronometer,
                 View.INVISIBLE)
           }
-        } catch (e:Exception){}
+        } catch (e:Exception){
+          println(e)
+        }
 
         notificationBuilder.setCustomContentView(notificationLayout)
         notificationManager.notify(id,notificationBuilder.build())
