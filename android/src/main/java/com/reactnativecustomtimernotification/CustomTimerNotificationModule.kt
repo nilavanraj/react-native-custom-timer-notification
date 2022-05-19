@@ -75,20 +75,21 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
     Log.i("ReactSystemNotification", "NotificationModule: sendEvent (to JS): $eventName")
   }
 
-    override fun getName(): String {
+  override fun getName(): String {
         return "CustomTimerNotification"
     }
-    fun convert(n:String):String {
+
+  fun convert(n:String):String {
       if (n.length == 1) return "0" + n;
       return n
     }
 
-
-    fun notificationPop(objectData:ReadableMap,remainingTime:String,visbleTimer:Boolean):NotificationCompat.Builder{
+  fun notificationPop(objectData:ReadableMap,remainingTime:String,visbleTimer:Boolean):NotificationCompat.Builder{
       val title = objectData.getString("title");
       val body = objectData.getString("body");
       val payload =  objectData.getString("payload");
       val id =objectData.getInt("id");
+      val isCountDown = objectData.getBoolean("isCountDown")
 
       val datetime = objectData.getString("date")
       val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH)
@@ -120,7 +121,7 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
       notificationLayout.setTextViewText(R.id.text,body)
 
      // notificationLayout.setTextViewText(R.id.timer,remainingTime)
-      notificationLayout.setChronometerCountDown(R.id.simpleChronometer, true);
+      notificationLayout.setChronometerCountDown(R.id.simpleChronometer, isCountDown);
       notificationLayout.setChronometer(R.id.simpleChronometer, remainingTime, ("%tM:%tS"), true);
 
 
@@ -151,6 +152,7 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setWhen(endTime.getTimeInMillis());
       val handler = Handler()
+      if(isCountDown)
       handler.postDelayed({
         notificationLayout.setChronometerCountDown(R.id.simpleChronometer, true);
         notificationLayout.setChronometer(R.id.simpleChronometer, remainingTime, ("%tM:%tS"), false);
@@ -173,11 +175,21 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
           return notificationBuilder
   }
 
-fun updatePop(objectData:ReadableMap,remainingTime:String,visbleTimer:Boolean){
+  fun updatePop(objectData:ReadableMap,remainingTime:String,visbleTimer:Boolean){
   val id =objectData.getInt("id");
   val notificationBuilder:NotificationCompat.Builder  = notificationPop(objectData,remainingTime,visbleTimer)
   notificationManager.notify(id,notificationBuilder.build())
 }
+
+  @ReactMethod
+  fun RemoveTimer(objectData:ReadableMap) {
+    val id =objectData.getInt("id");
+    val foreground = objectData.getBoolean("foreground");
+
+    removeNotification (id,foreground);
+  }
+
+
   fun removeNotification (id:Int,foreground:Boolean) {
     val notificationManager = myContext.getSystemService(NotificationManager::class.java)
     if(foreground)

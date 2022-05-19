@@ -50,6 +50,14 @@ export function TimerNotification(a: object): any {
     return CustomTimerNotification.TimerNotification(data);
   return null;
 }
+export function RemoveTimer(a: number, b: Boolean = false): any {
+  const payload = {
+    id: a,
+    foreground: b || false,
+  };
+
+  CustomTimerNotification.RemoveTimer(payload);
+}
 
 export function onEvent(listener: Function): void {
   DeviceEventEmitter.addListener('notificationClick', (event) =>

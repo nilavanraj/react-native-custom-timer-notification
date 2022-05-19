@@ -31,11 +31,16 @@ AndroidManifest
 import { TimerNotification, onEvent } from "react-native-custom-timer-notification";
 
 // ...
+
 // onclick and cancel listner
 onEvent(event=>{
 console.log(event)
 });
 
+// Remove timer 
+RemoveTimer(160211114);
+
+//Trigger notification
   TimerNotification({
       payload: JSON.stringify('notificationOpen?.data'),
       title: 'My notification',
@@ -44,6 +49,7 @@ console.log(event)
       remove: false, // optional
       foreground: false,
       date: new Date(Date.now() + 20000),
+      isCountDown: true, // false for positive timer 
     });
 ```
 
