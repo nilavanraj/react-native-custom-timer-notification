@@ -15,6 +15,7 @@ import android.icu.util.Calendar
 import android.os.*
 import android.view.View
 import android.widget.RemoteViews;
+import androidx.annotation.RequiresApi
 import com.facebook.react.bridge.ReadableMap;
 import java.util.*
 
@@ -30,6 +31,7 @@ class ForegroundService : Service() {
       val payload = objectData.getString("payload");
       val id = objectData.getInt("id");
       val datetime = objectData.getString("date")
+      val isCountDown = objectData.getBoolean("isCountDown")
 
       try {
         val remove =objectData.getBoolean("remove");
@@ -41,6 +43,7 @@ class ForegroundService : Service() {
       startIntent.putExtra("title", title)
       startIntent.putExtra("body", body)
       startIntent.putExtra("payload", payload)
+      startIntent.putExtra("isCountDown", isCountDown)
 
       ContextCompat.startForegroundService(context, startIntent)
     }
@@ -55,6 +58,9 @@ class ForegroundService : Service() {
     val body = intent?.getStringExtra("body");
     val payload =  intent?.getStringExtra("payload");
     val id:Int? = intent?.getIntExtra("id",0)
+    val isCountDown:Boolean? = intent?.getBooleanExtra("isCountDown",false)
+
+
 
     val intent = Intent(this, NotificationEventReceiver::class.java)
     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -74,10 +80,10 @@ class ForegroundService : Service() {
     notificationLayout.setTextViewText(R.id.title,title)
     notificationLayout.setTextViewText(R.id.text,body)
 if(displayerTimer){
-  notificationLayout.setChronometerCountDown(R.id.simpleChronometer, true);
+  notificationLayout.setChronometerCountDown(R.id.simpleChronometer, isCountDown!!);
   notificationLayout.setChronometer(R.id.simpleChronometer, remainingTime, ("%tM:%tS"), true);
 } else {
-  notificationLayout.setChronometerCountDown(R.id.simpleChronometer, false);
+  notificationLayout.setChronometerCountDown(R.id.simpleChronometer, isCountDown!!);
   notificationLayout.setChronometer(R.id.simpleChronometer, remainingTime, ("%tM:%tS"), false);
 }
 
@@ -107,8 +113,10 @@ if(displayerTimer){
 
     return notification
   }
+  @RequiresApi(Build.VERSION_CODES.N)
   override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
     val id:Int? = intent?.getIntExtra("id",0)
+    val isCountDown:Boolean = intent!!.getBooleanExtra("isCountDown",false)
 
     val datetime = intent?.getStringExtra("date")
     val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH)
@@ -122,6 +130,8 @@ if(displayerTimer){
     val remainingTime = startTime - elapsed
 
     val handler = Handler()
+
+    if(isCountDown)
     handler.postDelayed({
       try {
         val remove =intent?.getBooleanExtra("remove",false);
