@@ -39,7 +39,7 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
   lateinit var builder: Notification.Builder
   val channelId:String = "255"
   var packageName: String = ""
-
+var removedNotification = false;
   lateinit var myContext: ReactApplicationContext;
 
   constructor (context:ReactApplicationContext):super(context){
@@ -56,7 +56,7 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
           params.putString("action", extras!!.getString("action"))
           params.putString("payload", extras!!.getString("payload"))
           removeNotification(extras!!.getInt("id"),foregound)
-
+          removedNotification = true
           sendEvent("notificationClick", params)
         } catch (e: Exception) {
           println(e)
@@ -90,7 +90,7 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
       val payload =  objectData.getString("payload");
       val id =objectData.getInt("id");
       val isCountDown = objectData.getBoolean("isCountDown")
-
+      
       val datetime = objectData.getString("date")
       val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH)
 
@@ -170,6 +170,7 @@ class CustomTimerNotificationModule: ReactContextBaseJavaModule {
         }
 
         notificationBuilder.setCustomContentView(notificationLayout)
+        if(!removedNotification)
         notificationManager.notify(id,notificationBuilder.build())
       }, Math.abs(elapsed))
           return notificationBuilder
