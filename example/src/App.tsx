@@ -16,13 +16,12 @@ export default function App() {
       body: 'Much longer text that cannot fit one line... ',
       id: 160211114,
       remove: false, // optional
-      foreground: true,
-      date: new Date(Date.now()),
-      isCountDown: false,
+      foreground: false,
+      date: new Date(Date.now()+20000),
+      isCountDown: true,
+      setCustomContentView:true // optional
     });
-    setTimeout(() => {
-      RemoveTimer(160211114, true);
-    }, 5000);
+
   }, []);
 
   return <></>;

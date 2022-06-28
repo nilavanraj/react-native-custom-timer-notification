@@ -50,6 +50,7 @@ RemoveTimer(160211114);
       foreground: false,
       date: new Date(Date.now() + 20000),
       isCountDown: true, // false for positive timer 
+      setCustomContentView:true // optional
     });
 ```
 

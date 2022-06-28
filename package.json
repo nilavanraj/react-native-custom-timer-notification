@@ -1,6 +1,6 @@
 {
   "name": "react-native-custom-timer-notification",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "custom timer notification",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",

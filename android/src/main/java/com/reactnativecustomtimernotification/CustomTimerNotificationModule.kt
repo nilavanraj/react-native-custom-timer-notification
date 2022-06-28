@@ -90,7 +90,13 @@ var removedNotification = false;
       val payload =  objectData.getString("payload");
       val id =objectData.getInt("id");
       val isCountDown = objectData.getBoolean("isCountDown")
-      
+
+      val setCustomContentView =
+        if (objectData.hasKey("setCustomContentView"))
+          objectData.getBoolean("setCustomContentView")
+        else
+          true;
+
       val datetime = objectData.getString("date")
       val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH)
 
@@ -145,12 +151,15 @@ var removedNotification = false;
             .setContentTitle(title)
             .setContentText(body)
             .setOnlyAlertOnce(true)
-            .setStyle(NotificationCompat.DecoratedCustomViewStyle())
             .setCustomContentView(notificationLayout)
             .setContentIntent(pendingIntent)
             .setDeleteIntent(onDismissPendingIntent)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setWhen(endTime.getTimeInMillis());
+
+    if(setCustomContentView)
+      notificationBuilder.setStyle(NotificationCompat.DecoratedCustomViewStyle())
+
       val handler = Handler()
       if(isCountDown)
       handler.postDelayed({
