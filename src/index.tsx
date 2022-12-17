@@ -17,6 +17,16 @@ const CustomTimerNotification = NativeModules.CustomTimerNotification
       }
     );
 
+const CustomNotificationModule = NativeModules.CustomNotificationModule
+  ? NativeModules.CustomNotificationModule
+  : new Proxy(
+      {},
+      {
+        get() {
+          throw new Error(LINKING_ERROR);
+        },
+      }
+    );
 export function TimerNotification(a: object): any {
   const parseDate = (rawDate: any) => {
     let hours;
@@ -57,6 +67,11 @@ export function RemoveTimer(a: number, b: Boolean = false): any {
   };
 
   CustomTimerNotification.RemoveTimer(payload);
+}
+
+export function multiply(a: number, b: number): Promise<number> {
+  console.log(CustomNotificationModule);
+  return CustomNotificationModule.multiply(a, b);
 }
 
 export function onEvent(listener: Function): void {
