@@ -46,22 +46,15 @@ class CustomNotificationModule: ReactContextBaseJavaModule {
 
     @ReactMethod
     fun multiply(objectData:ReadableMap,callback: Callback) {
-      println("multiply")
-
       try{
-        val teamImg1 = objectData.getString("teamImg1");
-        val teamImg2 = objectData.getString("teamImg2");
+
         val payload = objectData.getString("payload");
         val title = objectData.getString("title");
         val body = objectData.getString("body");
         val id =objectData.getInt("id");
         val text = objectData.getArray("TextView");
         val imageView = objectData.getArray("ImageView");
-        var image: Bitmap? = null
-        var image1: Bitmap? = null
 
-        image = BitmapFactory.decodeStream(java.net.URL(teamImg1).openStream());
-        image1 = BitmapFactory.decodeStream(java.net.URL(teamImg2).openStream());
         val intent = Intent(myContext, CustomTimerNotificationPackage::class.java);
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         intent.putExtra("evenData",payload);
@@ -106,7 +99,7 @@ class CustomNotificationModule: ReactContextBaseJavaModule {
             val arrayname = arrayOf(R.layout.image_view_layout1, R.layout.image_view_layout);
             val arrayname1 = arrayOf(R.id.imageView2, R.id.imageView1);
 
-            if (true) {
+            if (false) {
           val item = imageView?.getMap(0);
           val textView = RemoteViews(myContext.getPackageName(),R.layout.image_view_layout);
           val url:String?=item?.getString("url");
@@ -137,38 +130,33 @@ class CustomNotificationModule: ReactContextBaseJavaModule {
 
         }
         if (true) {
-          val item = imageView?.getMap(1);
-          val textView = RemoteViews(myContext.getPackageName(),R.layout.image_view_layout1);
-          val url:String?=item?.getString("url");
-          val decodedString: ByteArray = Base64.decode(url, Base64.DEFAULT)
-          val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+          for (i in 0..(text?.size()?.minus(1) ?: 0)) {
+            val item = imageView?.getMap(i);
+            val remoteLocalImage =
+              RemoteViews(myContext.getPackageName(), arrayname[i]);
+            val url: String? = item?.getString("url");
+            val decodedString: ByteArray = Base64.decode(url, Base64.DEFAULT)
+            val decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+            notificationLayout.addView(R.id.main, remoteLocalImage);
+            notificationLayout.setImageViewBitmap(arrayname1[i], decodedByte);
+            try {
+              // textView.setString(R.id.imageView1, "layout_width", "34dp");
+              val PaddingLeft: Int? = item?.getInt("PaddingLeft");
+              val PaddingTop: Int? = item?.getInt("PaddingTop");
+              val PaddingRight: Int? = item?.getInt("PaddingRight");
+              val PaddingBottom: Int? = item?.getInt("PaddingBottom");
 
-          // val imageBitMap = BitmapFactory.decodeStream(java.net.URL(url).openStream());
-          val float:Float=item?.getDouble("size")?.toFloat()!!
-          notificationLayout.setImageViewBitmap(R.id.imageView2,decodedByte);
-
-          try {
-
-             // textView.setString(R.id.imageView1, "layout_width", "34dp");
-            val PaddingLeft: Int? = item?.getInt("PaddingLeft");
-            val PaddingTop: Int? = item?.getInt("PaddingTop");
-            val PaddingRight: Int? = item?.getInt("PaddingRight");
-            val PaddingBottom: Int? = item?.getInt("PaddingBottom");
-
-            textView.setViewPadding(
-              R.id.imageView1,
-             10,
-            0,
-               0,
-               0
-            );
-          } catch (e:Exception){
-            println(e)
+              remoteLocalImage.setViewPadding(
+                R.id.imageView1,
+                PaddingLeft ?: 0,
+                PaddingTop ?: 0,
+                PaddingRight ?: 0,
+                PaddingBottom ?: 0
+              );
+            } catch (e:Exception){
+              println(e)
+            }
           }
-          //textView.setViewPadding (Align.CENTER)
-          notificationLayout.addView(R.id.main, textView)
-         // notificationLayout.setImageViewBitmap(R.id.imageView1,image1)
-
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(channelId,"Lineup",NotificationManager.IMPORTANCE_HIGH)

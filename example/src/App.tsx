@@ -46,7 +46,7 @@ export default function App() {
         ImageView: [
           {
             size: 50,
-            url:"https://s3.ap-south-1.amazonaws.com/leaguex/team-images/bblw/MLSW.png",
+            url:"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII",
             PaddingLeft: -100,
             PaddingTop: 0,
             PaddingRight: 0,
@@ -55,7 +55,7 @@ export default function App() {
           {
             size: 50,
             url: image1,
-            PaddingLeft: 10,
+            PaddingLeft: 200,
             PaddingTop: 0,
             PaddingRight: 0,
             PaddingBottom: 0,
