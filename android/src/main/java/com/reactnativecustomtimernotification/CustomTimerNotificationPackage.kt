@@ -7,9 +7,14 @@ import com.facebook.react.uimanager.ViewManager
 
 
 class CustomTimerNotificationPackage : ReactPackage {
-    override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-        return listOf(CustomTimerNotificationModule(reactContext))
-    }
+    override fun createNativeModules(
+        reactContext: ReactApplicationContext): List<NativeModule> {
+    val modules = ArrayList<NativeModule>()
+
+    modules.add(CustomNotificationModule(reactContext))
+    modules.add(CustomTimerNotificationModule(reactContext))
+    return modules
+}
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
         return emptyList()
