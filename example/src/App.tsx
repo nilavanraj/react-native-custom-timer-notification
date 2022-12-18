@@ -4,89 +4,77 @@ import {
   TimerNotification,
   RemoveTimer,
   onEvent,
-  multiply,
+  CustomNotification,
 } from 'react-native-custom-timer-notification';
-import { image } from './image';
-const image1 = `iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=`
+import { Dimensions } from 'react-native';
+import { image, image2 } from './image';
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+
 onEvent((event: any) => {
   console.log(event);
 });
+
 export default function App() {
   React.useEffect(() => {
-    multiply(
+    CustomNotification(
       {
-        teamImg1:
-          'https://s3.ap-south-1.amazonaws.com/leaguex/team-images/bblw/MLSW.png',
-        teamImg2:
-          'https://s3.ap-south-1.amazonaws.com/leaguex/team-images/bblw/MLSW.png',
         eventData: JSON.stringify('notificationOpen?.data'),
         title: 'notificationOpen.data.title',
         body: ' notificationOpen.data.body',
-        id: 160211114,
-        TextView: [
+        id: 1,
+
+        View: [
           {
-            name: 'nilavan1',
-            size: 35,
+            name: 'Limited Sales',
+            size: 20,
+            type: 2,
+            bold: 3,
+            PaddingLeft: 10,
+            PaddingTop: 50,
+            PaddingRight: 0,
+            PaddingBottom: 0,
+            setViewVisibility: false,
+            color: '#ed1a45',
+          },
+          {
+            size: 50,
+            uri: image,
+            type: 1,
             PaddingLeft: 0,
             PaddingTop: 0,
             PaddingRight: 0,
-            PaddingBottom: 100,
-            setViewVisibility: false,
+            PaddingBottom: 0,
           },
           {
-            name: 'nilavan1',
+            name: 'Buy now',
+            size: 30,
+            type: 2,
+            bold: 3,
+            PaddingLeft: 10,
+            PaddingTop: 100,
+            PaddingRight: 0,
+            PaddingBottom: 0,
+            setViewVisibility: false,
+            color: '#fbd335',
+          },
+          {
+            type: 3,
+            ZeroTime: new Date(Date.now() + 20000),
+            PaddingLeft: 800,
+            hide: true,
             size: 25,
-            PaddingLeft: 0,
-            PaddingTop: 10,
-            PaddingRight: 0,
-            PaddingBottom: 100,
-            setViewVisibility: false,
-          },
-        ],
-        ImageView: [
-          {
-            size: 50,
-            url:"iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII",
-            PaddingLeft: -100,
+            color: '#0000FF',
             PaddingTop: 0,
             PaddingRight: 0,
             PaddingBottom: 0,
           },
-          {
-            size: 50,
-            url: image1,
-            PaddingLeft: 200,
-            PaddingTop: 0,
-            PaddingRight: 0,
-            PaddingBottom: 0,
-          }
-          
         ],
-        toFixed: function (fractionDigits?: number | undefined): string {
-          throw new Error('Function not implemented.');
-        },
-        toExponential: function (fractionDigits?: number | undefined): string {
-          throw new Error('Function not implemented.');
-        },
-        toPrecision: function (precision?: number | undefined): string {
-          throw new Error('Function not implemented.');
-        },
       },
       (e: any) => {
         console.log(e);
       }
     );
-    // TimerNotification({
-    //   payload: JSON.stringify('notificationOpen?.data'),
-    //   title: 'My notification',
-    //   body: 'Much longer text that cannot fit one line... ',
-    //   id: 160211114,
-    //   remove: false, // optional
-    //   foreground: false,
-    //   date: new Date(Date.now() + 20000),
-    //   isCountDown: true,
-    //   setCustomContentView: true, // optional
-    // });
   }, []);
 
   return <></>;

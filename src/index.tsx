@@ -1,5 +1,29 @@
 import { NativeModules, Platform, DeviceEventEmitter } from 'react-native';
+const parseDate = (rawDate: any) => {
+  let hours;
+  let day;
+  let month;
 
+  if (rawDate.getHours().toString().length === 1) {
+    hours = `0${rawDate.getHours()}`;
+  } else {
+    hours = `${rawDate.getHours()}`;
+  }
+
+  if (rawDate.getDate().toString().length === 1) {
+    day = `0${rawDate.getDate()}`;
+  } else {
+    day = `${rawDate.getDate()}`;
+  }
+
+  if (rawDate.getMonth().toString().length === 1) {
+    month = `0${rawDate.getMonth() + 1}`;
+  } else {
+    month = `${rawDate.getMonth() + 1}`;
+  }
+
+  return `${day}-${month}-${rawDate.getFullYear()} ${hours}:${rawDate.getMinutes()}:${rawDate.getSeconds()}`;
+};
 const LINKING_ERROR =
   `The package 'react-native-custom-timer-notification' doesn't seem to be linked. Make sure: \n\n` +
   Platform.select({ ios: "- You have run 'pod install'\n", default: '' }) +
@@ -28,31 +52,6 @@ const CustomNotificationModule = NativeModules.CustomNotificationModule
       }
     );
 export function TimerNotification(a: object): any {
-  const parseDate = (rawDate: any) => {
-    let hours;
-    let day;
-    let month;
-
-    if (rawDate.getHours().toString().length === 1) {
-      hours = `0${rawDate.getHours()}`;
-    } else {
-      hours = `${rawDate.getHours()}`;
-    }
-
-    if (rawDate.getDate().toString().length === 1) {
-      day = `0${rawDate.getDate()}`;
-    } else {
-      day = `${rawDate.getDate()}`;
-    }
-
-    if (rawDate.getMonth().toString().length === 1) {
-      month = `0${rawDate.getMonth() + 1}`;
-    } else {
-      month = `${rawDate.getMonth() + 1}`;
-    }
-
-    return `${day}-${month}-${rawDate.getFullYear()} ${hours}:${rawDate.getMinutes()}:${rawDate.getSeconds()}`;
-  };
   const data: any = a;
   data.date = parseDate(data.date);
 
@@ -69,9 +68,24 @@ export function RemoveTimer(a: number, b: Boolean = false): any {
   CustomTimerNotification.RemoveTimer(payload);
 }
 
-export function multiply(a: number, b: number): Promise<number> {
-  console.log(CustomNotificationModule);
-  return CustomNotificationModule.multiply(a, b);
+export function CustomNotification(a: object, cb: any): any {
+  const data: any = a;
+
+  data.View = data.View.map((item) => {
+    if (item.type == 3)
+      return {
+        ...item,
+        ZeroTime: parseDate(item.ZeroTime),
+      };
+
+    return {
+      ...item,
+    };
+  });
+
+  if (Platform.OS === 'android')
+    return NativeModules.CustomNotificationModule.CustomNotification(data, cb);
+  return null;
 }
 
 export function onEvent(listener: Function): void {
