@@ -10,7 +10,7 @@ interface View {
   setViewVisibility?: boolean;
   color?: string;
   uri?: string;
-  ZeroTime?: date | null;
+  ZeroTime?: Date | null;
   hide?: boolean;
 }
 interface CNViewItems extends Array<View> {}
@@ -40,14 +40,15 @@ interface CTN {
   remove?: boolean;
   foreground: boolean;
   id: number;
-  date?: date;
+  date?: Date;
   isCountDown: boolean;
   setCustomContentView?: boolean;
 }
 
-export function onEvent(listener: function): Void;
-export function CustomNotification(a: CN, cb: function): Void;
-export function TimerNotification(a: CTN): Void;
+export function getArrayLength(arr: any[]): number;
+export function onEvent(listener: Function);
+export function CustomNotification(a: CN, cb: Function);
+export function TimerNotification(a: CTN);
 export function RemoveTimer(n: number);
-export const TYPES: Type;
-export const FB_TYPE: FB_TYPE;
+export let TYPES: Type;
+export let FB_TYPE: FB_TYPE;
