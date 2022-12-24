@@ -51,6 +51,7 @@ class CustomNotificationModule: ReactContextBaseJavaModule {
     @ReactMethod
     fun CustomNotification(objectData:ReadableMap,callback: Callback) {
       try{
+        imageCount = 0;
         val payload = objectData.getString(Constants.NOTIFICATION.PAYLOAD);
         val title = objectData.getString(Constants.NOTIFICATION.TITLE);
         val body = objectData.getString(Constants.NOTIFICATION.BODY);
@@ -77,6 +78,8 @@ class CustomNotificationModule: ReactContextBaseJavaModule {
         for (i in 0..(View?.size()?.minus(1) ?: 0)) {
           val item = View?.getMap(i);
           if(item!=null && item.hasKey(Constants.VIEW.TYPE) && item.getInt(Constants.VIEW.TYPE)==1){
+            Log.i("imageCount",imageCount.toString())
+
             setImageView(item, notificationLayout,imageCount);
             imageCount+=1;
           }
@@ -153,6 +156,7 @@ class CustomNotificationModule: ReactContextBaseJavaModule {
       bold = item.getInt(Constants.VIEW.BOLD)
     }
     val s = SpannableString(item?.getString("name"))
+    Typeface.BOLD
     s.setSpan(StyleSpan(bold), 0, s.length, 0)
     textView.setTextViewText(R.id.textView1, s)
 
@@ -207,9 +211,8 @@ class CustomNotificationModule: ReactContextBaseJavaModule {
       handler.postDelayed({
           notificationLayout.setChronometerCountDown(R.id.timerCustom, true);
           notificationLayout.setChronometer(R.id.timerCustom, remainingTime, ("%tM:%tS"), false);
-          if(item.getBoolean(Constants.VIEW.HIDE))
-            notificationLayout.setViewVisibility (R.id.timerCustom, View.INVISIBLE)
-            notificationBuilder.setCustomContentView(notificationLayout)
+        notificationLayout.setViewVisibility (R.id.timerCustomLayout, View.GONE)
+        notificationBuilder.setCustomContentView(notificationLayout)
             notificationManager.notify(id,notificationBuilder.build())
         }, Math.abs(elapsed))
     }
