@@ -1,5 +1,5 @@
 import { NativeModules, Platform, DeviceEventEmitter } from 'react-native';
-const parseDate = (rawDate: any) => {
+const parseDate = (rawDate) => {
   let hours;
   let day;
   let month;
@@ -51,15 +51,15 @@ const CustomNotificationModule = NativeModules.CustomNotificationModule
         },
       }
     );
-export function TimerNotification(a: object): any {
-  const data: any = a;
+export function TimerNotification(a) {
+  const data = a;
   data.date = parseDate(data.date);
 
   if (Platform.OS === 'android')
     return CustomTimerNotification.TimerNotification(data);
   return null;
 }
-export function RemoveTimer(a: number, b: Boolean = false): any {
+export function RemoveTimer(a, b = false) {
   const payload = {
     id: a,
     foreground: b || false,
@@ -68,8 +68,8 @@ export function RemoveTimer(a: number, b: Boolean = false): any {
   CustomTimerNotification.RemoveTimer(payload);
 }
 
-export function CustomNotification(a: object, cb: any): any {
-  const data: any = a;
+export function CustomNotification(a, cb) {
+  const data = a;
 
   data.View = data.View.map((item) => {
     if (item.type == 3)
@@ -84,12 +84,25 @@ export function CustomNotification(a: object, cb: any): any {
   });
 
   if (Platform.OS === 'android')
-    return NativeModules.CustomNotificationModule.CustomNotification(data, cb);
+    return CustomNotificationModule.CustomNotification(data, cb);
   return null;
 }
 
-export function onEvent(listener: Function): void {
+export function onEvent(listener) {
   DeviceEventEmitter.addListener('notificationClick', (event) =>
     listener(event)
   );
 }
+
+export const TYPES = {
+  Image: 1,
+  Text: 2,
+  Cronometer: 3,
+};
+
+export const FB_TYPE = {
+  NORMAL: 0,
+  BOLD: 1,
+  ITALIC: 2,
+  BOLD_ITALIC: 3,
+};
