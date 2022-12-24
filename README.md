@@ -45,10 +45,6 @@ import { TimerNotification } from "react-native-custom-timer-notification";
 | `date` |Time at which zero comes|
 
 
-// onclick and cancel listner
-
-
-
 #### Example
 
 ```js
