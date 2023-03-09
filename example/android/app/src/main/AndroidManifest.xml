@@ -27,7 +27,7 @@
       <receiver android:name="com.reactnativecustomtimernotification.NotificationEventReceiver" />
       <receiver android:name="com.reactnativecustomtimernotification.OnClickBroadcastReceiver" />
 
-      <service android:name="com.reactnativecustomtimernotification.ForegroundService"/>
+      <service android:name="com.reactnativecustomtimernotification.ForegroundService" android:exported="true"/>
       
       <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
     </application>

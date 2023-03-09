@@ -67,14 +67,31 @@ class ForegroundService : Service() {
     intent.putExtra("id",id);
     intent.putExtra("action","press");
     intent.putExtra("payload",payload);
-    val pendingIntent = PendingIntent.getBroadcast(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    var pendingIntent:PendingIntent? = null;
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+    } else {
+    pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
 
     val onCancelIntent = Intent(this, OnClickBroadcastReceiver::class.java)
     onCancelIntent.putExtra("id",id);
     onCancelIntent.putExtra("action","cancel");
     onCancelIntent.putExtra("payload",payload);
-    val onDismissPendingIntent =
-      PendingIntent.getBroadcast(this, 0, onCancelIntent, 0)
+    var onDismissPendingIntent:PendingIntent? = null;
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        onDismissPendingIntent = PendingIntent.getBroadcast(
+          this,
+          0,
+          onCancelIntent,
+          PendingIntent.FLAG_MUTABLE // Set the mutability flag to mutable
+        );
+      } else {
+          onDismissPendingIntent =
+            PendingIntent.getBroadcast(this, 0, onCancelIntent, 0) 
+      }
 
     val notificationLayout = RemoteViews(packageName, R.layout.notification_open);
     notificationLayout.setTextViewText(R.id.title,title)
