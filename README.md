@@ -1,4 +1,4 @@
-# react-native-custom-timer-notification
+# React Native Custom Timer Notification
 
 Custom timer notification for React Native Android 🔔<br>
  **Now version 0.8 Supports full size custom notifications** <br>
