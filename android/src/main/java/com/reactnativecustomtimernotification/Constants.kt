@@ -10,6 +10,7 @@ object Constants {
     const val IMAGEVIEW = "ImageView"
     const val VIEW = "View"
     const val ZEROTIME = "ZeroTime"
+    const val GIFFY_URl = "giffyUrl"
 
   }
   object PADDING {
