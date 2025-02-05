@@ -183,7 +183,7 @@ class CustomNotificationModule: ReactContextBaseJavaModule {
     val float:Float=item?.getDouble(Constants.VIEW.SIZE)?.toFloat()!!
     textView.setTextViewTextSize(R.id.textView1, TypedValue.COMPLEX_UNIT_SP, float);
     textView.setTextColor(R.id.textView1,Color.parseColor(item?.getString("color")));
-    if(item?.getBoolean("setViewVisibility"))
+    if(item?.getBoolean("setViewVisibility")==true)
       textView.setViewVisibility (R.id.textView1,
         View.INVISIBLE)
     setPadding(item,textView,R.id.textView1);

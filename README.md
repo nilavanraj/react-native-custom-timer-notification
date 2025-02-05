@@ -1,91 +1,130 @@
-# React Native Custom Timer Notification
+# React Native Custom Timer Notification 🔔
 
-Custom timer notification for React Native Android 🔔<br>
- **Now version 0.8 Supports full size custom notifications** <br>
+A powerful, flexible notification library for React Native Android that enables custom timer and GIF-based notifications with advanced customization options.
+
+Now v0.9.1 supports Gif in Android 14+ 
 <p align="center">
-  <img  src="https://user-images.githubusercontent.com/58332892/208312749-58586dba-da62-4531-85bb-62346a57aa03.gif">
-</p>
-<p align="center">
-  <img width="80%" src="https://user-images.githubusercontent.com/58332892/166133982-effe321c-a0fd-4315-bb29-cc7ee29d0bd4.gif">
+  <img width="50%" src="https://github.com/user-attachments/assets/5578e1aa-ac4c-458e-a661-c334e6bf8741">
 </p>
 
+##  Key Features
 
-## Installation
+- **Customizable Timer Notifications**: Create dynamic, time-based notifications
+- **Animated GIF Support**: Enhance notifications with animated graphics
+- **Fully Customizable Notification Layouts**: Design unique notification experiences
 
-```sh
+
+##  Installation
+
+```bash
 npm install react-native-custom-timer-notification
 ```
 
-AndroidManifest
+## 🛠 Android Setup
+
+### 1. Add Permissions to AndroidManifest.xml
+
+Open `android/app/src/main/AndroidManifest.xml` and add:
+
 ```xml
-
-      <receiver android:name="com.reactnativecustomtimernotification.NotificationEventReceiver" />
-      <receiver android:name="com.reactnativecustomtimernotification.OnClickBroadcastReceiver" />
-      <!--
-      if foreground service used add this line
-      -->
-      <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-      <service android:name="com.reactnativecustomtimernotification.ForegroundService"/>
+<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 ```
-## Usage
-### Timer notification
 
-Only Timer notifiction with default Title and body
-```js
+### 2. Register Receivers and Services
 
+Inside the `<application>` tag, add:
+
+```xml
+<receiver android:name="com.reactnativecustomtimernotification.NotificationEventReceiver" />
+<receiver android:name="com.reactnativecustomtimernotification.OnClickBroadcastReceiver" />
+<service android:name="com.reactnativecustomtimernotification.ForegroundService"/>
+```
+
+##  Usage Scenarios
+
+### Basic Timer Notification
+
+```javascript
 import { TimerNotification } from "react-native-custom-timer-notification";
+
+TimerNotification({
+  id: 1,
+  title: "Meeting Reminder",
+  body: "Team meeting starts in:",
+  date: "30-12-2024 15:00:00",
+  payload: "meeting-123"
+});
 ```
-
-| Property | Description |
-| --- | --- |
-| `payload` | sent data will be received when click or canceled |
-| `title` |Title of the notification|
-| `body` |Body of the notification |
-| `id` |unique number|
-| `date` |Time at which zero comes|
+### Animated Notification with GIF
 
 
-#### Example
-
-```js
-
-  TimerNotification({
-      payload: JSON.stringify('notification.data'),
-      title: 'My notification',
-      body: 'Much longer text that cannot fit one line... ',
-      id: 1,
-      remove: false, // optional
-      foreground: false,
-      date: new Date(Date.now() + 20000),
-      isCountDown: true, // false for positive timer 
-      setCustomContentView:true // optional
-    });
-    
+```javascript
+CustomTimerNotification.TimerNotification({
+  id: 2,
+  title: "Special Offer!",
+  body: "Limited time offer ends in:",
+  date: "25-12-2024 23:59:59",
+  gifUrl: "https://example.com/animation.gif",
+  payload: "offer-456"
+});
 ```
-<h3>Full custom notification </h3>
+#### Options
 
-Full custom notifiction with custom image, text and cronometer.
-```js
+| Parameter | Type     | Required | Description                     |
+|-----------|----------|----------|---------------------------------|
+| id        | number   | Yes      | Unique notification identifier  |
+| title     | string   | Yes      | Notification title             |
+| body      | string   | Yes      | Notification message           |
+| date      | string   | Yes      | End date (dd-MM-yyyy HH:mm:ss) |
+| gifUrl    | string   | No       | URL to GIF animation           |
+| payload   | string   | No       | Custom data payload            |
 
+##  Full Custom Notification
+
+Create fully customized notifications with detailed configurations:
+<p align="center">
+  <img  src="https://user-images.githubusercontent.com/58332892/208312749-58586dba-da62-4531-85bb-62346a57aa03.gif">
+</p>
+
+```javascript
 import { CustomNotification, TYPES, FB_TYPE } from "react-native-custom-timer-notification";
+
+CustomNotification({
+  eventData: JSON.stringify('notification_data'),
+  title: 'Custom Notification',
+  body: 'Detailed Notification',
+  id: 1,
+  View: [
+    {
+      name: 'Limited Sales',
+      size: 20,
+      type: TYPES.Text,
+      bold: FB_TYPE.BOLD_ITALIC,
+      color: '#ed1a45',
+    },
+    // Additional view configurations
+  ]
+});
 ```
 
+#### Options
 | Property | Description |
 | --- | --- |
-| `eventData` | sent data will be received when click or canceled |
+| `eventData` | sent data will be received when clicked or canceled |
 | `title` |Title of the notification|
 | `body` |Body of the notification |
 | `id` |unique number|
 | `View` |View that needs to be added (Array)|
 
-<h3> View Properties </h3>
+#### View Options
 
 | Property | Description |
 | --- | --- |
 | `name` | text that needs to be displayed |
 | `size` |Size of text|
-| `type` |Type of view (Text,Image, Cronometer) |
-| `bold` |Font (NORMAL,BOLD,ITALIC,BOLD_ITALIC)|
+| `type` |Type of view (Text, Image, Cronometer) |
+| `bold` |Font (NORMAL, BOLD,ITALIC, BOLD_ITALIC)|
 | `uri` |Image in base64|
 | `PaddingLeft` |Left Padding|
 | `PaddingTop` |PaddingTop|
@@ -94,88 +133,17 @@ import { CustomNotification, TYPES, FB_TYPE } from "react-native-custom-timer-no
 | `color` |Text color|
 | `ZeroTime` |Time at which zero comes|
 
-#### Example
 
-```js
+## 🤝 Contributing
 
-    CustomNotification(
-      {
-        eventData: JSON.stringify('notificationOpen?.data'),
-        title: 'notificationOpen.data.title',
-        body: ' notificationOpen.data.body',
-        id: 1,
+See the contributing guide to learn how to contribute to the repository and the development workflow.
 
-        View: [
-          {
-            name: 'Limited Sales',
-            size: 20,
-            type: TYPES.Text,
-            bold: FB_TYPE.BOLD_ITALIC,
-            PaddingLeft: 10,
-            PaddingTop: 50,
-            PaddingRight: 0,
-            PaddingBottom: 0,
-            setViewVisibility: false,
-            color: '#ed1a45',
-          },
-          {
-            uri: image,
-            type: TYPES.Image,
-            PaddingLeft: 0,
-            PaddingTop: 0,
-            PaddingRight: 0,
-            PaddingBottom: 0,
-          },
-          {
-            name: 'Buy now',
-            size: 30,
-            type: TYPES.Text,
-            bold: FB_TYPE.BOLD_ITALIC,
-            PaddingLeft: 10,
-            PaddingTop: 100,
-            PaddingRight: 0,
-            PaddingBottom: 0,
-            setViewVisibility: false,
-            color: '#fbd335',
-          },
-          {
-            type: TYPES.Cronometer,
-            size: 30,
-            ZeroTime: new Date(Date.now() + 20000),
-            PaddingLeft: 800,
-            color: '#0000FF',
-            PaddingTop: 0,
-            PaddingRight: 0,
-            PaddingBottom: 0,
-          },
-        ],
-      },
-      (e: any) => {
-        console.log(e);
-      }
-    );
-    
-```
-### Remove Notifications 
-```js
-import { RemoveTimer } from "react-native-custom-timer-notification";
+## 📄 License
 
-RemoveTimer(1);
+MIT Licensed. See LICENSE file for details.
 
-```
-### onclick and cancel listner
-```js
-import { onEvent } from "react-native-custom-timer-notification";
+## 🔍 Keywords
 
-onEvent(event=>{
-console.log(event)
-});
+react-native, notifications, timer-notifications, gif-notifications, android-notifications, custom-notifications, countdown-timer, animated-notifications, react-native-notifications, mobile-notifications, push-notifications, notification-system, react-native-android, notification-timer, countdown-notifications, custom-notification-layout
 
-```
-## Contributing
 
-See the [contributing guide](CONTRIBUTING.md) to learn how to contribute to the repository and the development workflow.
-
-## License
-
-MIT
