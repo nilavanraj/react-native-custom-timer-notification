@@ -133,6 +133,35 @@ CustomNotification({
 | `color` |Text color|
 | `ZeroTime` |Time at which zero comes|
 
+### Event Handling
+
+```javascript
+import { onEvent } from "react-native-custom-timer-notification";
+
+// Listen for notification interactions (press/cancel)
+onEvent(event => {
+  const { action, payload } = event;
+  
+  switch(action) {
+    case 'press':
+      // Handle notification press/click
+      console.log('Notification pressed:', payload);
+      break;
+    case 'cancel':
+      // Handle notification dismissal
+      console.log('Notification cancelled:', payload);
+      break;
+  }
+});
+
+### Remove Notifications
+
+```javascript
+import { RemoveTimer } from "react-native-custom-timer-notification";
+
+// Remove a specific notification by ID
+RemoveTimer(1);
+```
 
 ## 🤝 Contributing
 
