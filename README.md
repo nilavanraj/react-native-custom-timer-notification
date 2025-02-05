@@ -1,15 +1,20 @@
 # React Native Custom Timer Notification 🔔
 
-A powerful, flexible notification library for React Native Android that enables custom timer-based notifications with advanced customization options.
+A powerful, flexible notification library for React Native Android that enables custom timer and GIF-based notifications with advanced customization options.
 
-## 🚀 Key Features
+Now v0.9.1 supports Gif in Android 14+ 
+<p align="center">
+  <img width="50%" src="https://github.com/user-attachments/assets/5578e1aa-ac4c-458e-a661-c334e6bf8741">
+</p>
+
+##  Key Features
 
 - **Customizable Timer Notifications**: Create dynamic, time-based notifications
 - **Animated GIF Support**: Enhance notifications with animated graphics
 - **Fully Customizable Notification Layouts**: Design unique notification experiences
 
 
-## 📦 Installation
+##  Installation
 
 ```bash
 npm install react-native-custom-timer-notification
@@ -36,13 +41,9 @@ Inside the `<application>` tag, add:
 <service android:name="com.reactnativecustomtimernotification.ForegroundService"/>
 ```
 
-## 🎯 Usage Scenarios
+##  Usage Scenarios
 
 ### Basic Timer Notification
-
-<p align="center">
-  <img width="80%" src="https://user-images.githubusercontent.com/58332892/166133982-effe321c-a0fd-4315-bb29-cc7ee29d0bd4.gif">
-</p>
 
 ```javascript
 import { TimerNotification } from "react-native-custom-timer-notification";
@@ -55,12 +56,8 @@ TimerNotification({
   payload: "meeting-123"
 });
 ```
-
 ### Animated Notification with GIF
 
-<p align="center">
-  <img width="50%" src="https://github.com/user-attachments/assets/cea88228-602a-42df-8326-569fd0a03cf1">
-</p>
 
 ```javascript
 CustomTimerNotification.TimerNotification({
@@ -83,7 +80,7 @@ CustomTimerNotification.TimerNotification({
 | gifUrl    | string   | No       | URL to GIF animation           |
 | payload   | string   | No       | Custom data payload            |
 
-## 🎨 Full Custom Notification
+##  Full Custom Notification
 
 Create fully customized notifications with detailed configurations:
 <p align="center">
@@ -110,14 +107,24 @@ CustomNotification({
   ]
 });
 ```
-#### ViewOptions
+
+#### Options
+| Property | Description |
+| --- | --- |
+| `eventData` | sent data will be received when clicked or canceled |
+| `title` |Title of the notification|
+| `body` |Body of the notification |
+| `id` |unique number|
+| `View` |View that needs to be added (Array)|
+
+#### View Options
 
 | Property | Description |
 | --- | --- |
 | `name` | text that needs to be displayed |
 | `size` |Size of text|
-| `type` |Type of view (Text,Image, Cronometer) |
-| `bold` |Font (NORMAL,BOLD,ITALIC,BOLD_ITALIC)|
+| `type` |Type of view (Text, Image, Cronometer) |
+| `bold` |Font (NORMAL, BOLD,ITALIC, BOLD_ITALIC)|
 | `uri` |Image in base64|
 | `PaddingLeft` |Left Padding|
 | `PaddingTop` |PaddingTop|
@@ -131,9 +138,12 @@ CustomNotification({
 
 See the contributing guide to learn how to contribute to the repository and the development workflow.
 
+## 📄 License
 
-## License
+MIT Licensed. See LICENSE file for details.
 
-MIT
+## 🔍 Keywords
+
+react-native, notifications, timer-notifications, gif-notifications, android-notifications, custom-notifications, countdown-timer, animated-notifications, react-native-notifications, mobile-notifications, push-notifications, notification-system, react-native-android, notification-timer, countdown-notifications, custom-notification-layout
 
 
