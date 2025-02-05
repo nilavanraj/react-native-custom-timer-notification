@@ -153,7 +153,7 @@ onEvent(event => {
       break;
   }
 });
-
+```
 ### Remove Notifications
 
 ```javascript
@@ -163,9 +163,12 @@ import { RemoveTimer } from "react-native-custom-timer-notification";
 RemoveTimer(1);
 ```
 
-## 🤝 Contributing
+## ⭐️ Support the Project
 
-See the contributing guide to learn how to contribute to the repository and the development workflow.
+If you find this library helpful, please consider:
+- Giving it a GitHub star ⭐️
+- Creating issues for bug reports and feature requests
+- Contributing with pull requests
 
 ## 📄 License
 
