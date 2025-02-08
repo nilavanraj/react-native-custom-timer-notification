@@ -60,13 +60,14 @@ TimerNotification({
 
 
 ```javascript
-CustomTimerNotification.TimerNotification({
-  id: 2,
-  title: "Special Offer!",
-  body: "Limited time offer ends in:",
-  date: "25-12-2024 23:59:59",
-  gifUrl: "https://example.com/animation.gif",
-  payload: "offer-456"
+TimerNotification({
+ id: 2,
+ title: <p style="color: #ff5722; font-size: 18px;"><b>🔥 Limited-Time Deal! Hurry Up! ⏳</b></p>,
+ body: <p style="font-size: 14px;">⏳ Time is running out! <b>Claim your exclusive discount</b> before it's too late.</p>,
+ subtitle: "💸",
+ date: new Date(Date.now() + 20000), 
+ giffyUrl: "https://media1.tenor.com/m/EBdqcf-JxpYAAAAC/6m-rain.gif",
+ payload: "offer-456"
 });
 ```
 #### Options
@@ -74,10 +75,10 @@ CustomTimerNotification.TimerNotification({
 | Parameter | Type     | Required | Description                     |
 |-----------|----------|----------|---------------------------------|
 | id        | number   | Yes      | Unique notification identifier  |
-| title     | string   | Yes      | Notification title             |
-| body      | string   | Yes      | Notification message           |
-| date      | string   | Yes      | End date (dd-MM-yyyy HH:mm:ss) |
-| gifUrl    | string   | No       | URL to GIF animation           |
+| title     | string   | Yes      | Notification title with HTML support |
+| body      | string   | Yes      | Notification message with HTML support |
+| date      | Date     | No       | End date with time (dd-MM-yyyy HH:mm:ss) |
+| giffyUrl    | string   | No       | URL to GIF animation           |
 | payload   | string   | No       | Custom data payload            |
 
 ##  Full Custom Notification

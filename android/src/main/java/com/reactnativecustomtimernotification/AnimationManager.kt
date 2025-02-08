@@ -36,7 +36,8 @@ data class NotificationConfig(
     val subtitle: String?, 
     val smallIcon: Int = android.R.drawable.ic_dialog_info,
     val countdownDuration: Long = 5000,
-    val payload: String?
+    val payload: String?,
+    val body: String?
 )
 
 
@@ -60,12 +61,11 @@ class AnimatedNotificationManager(
             try {
               val extras = intent.extras
               val params: WritableMap = Arguments.createMap()
+              params.putString("id", extras!!.getString("id"))   
               params.putString("action", extras!!.getString("action"))    
               params.putString("payload", extras!!.getString("payload"))    
               Log.d(TAG, extras?.getString("payload")?:"")
-              if(extras!!.getString("action") == "cancel"){
-                disableCurrentNotification = true
-              }
+              disableCurrentNotification = true
               context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
               .emit(
                 "notificationClick",
@@ -115,7 +115,8 @@ class AnimatedNotificationManager(
         val remoteViews = RemoteViews(context.packageName, R.layout.gen_notification_open)
 
         if(config.gifUrl !== null){
-          val frames = processGif(config.gifUrl, memoryLimitMB = GIF_MEMORY_LIMIT_MB)
+          val gifProcessor = GifProcessor()
+          val frames = gifProcessor.processGif(config.gifUrl, memoryLimitMB = GIF_MEMORY_LIMIT_MB)
 
           frames.forEach { frame ->
               val frameView = RemoteViews(context.packageName, R.layout.giffy_image)
@@ -143,25 +144,30 @@ class AnimatedNotificationManager(
         } 
       } else null
 
-        val subtitleHtml = if(config.title != null) {
+        val bodyHtml = if(config.title != null) {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-              Html.fromHtml(config.subtitle, Html.FROM_HTML_MODE_COMPACT)
+              Html.fromHtml(config.body, Html.FROM_HTML_MODE_COMPACT)
           } else {
-              Html.fromHtml(config.subtitle)
+              Html.fromHtml(config.body)
           }
         } else null
 
         if(titleHtml != null)
         remoteViews.setTextViewText(R.id.title, titleHtml)
 
-        if(subtitleHtml != null)
-        remoteViews.setTextViewText(R.id.subtitle, subtitleHtml)
+        if(bodyHtml != null)
+        remoteViews.setTextViewText(R.id.body, bodyHtml)
     }
 
     private fun configureChronometer(remoteViews: RemoteViews, countdownDuration: Long) {
+      if(countdownDuration !== null){
         val chronometerBaseTime = countdownDuration
         remoteViews.setChronometerCountDown(R.id.simpleChronometer, true)
         remoteViews.setChronometer(R.id.simpleChronometer, chronometerBaseTime, null, true)
+      } else {
+        remoteViews.setViewVisibility(R.id.simpleChronometer, View.GONE)
+      }
+        
     }
 
     private fun buildNotification(remoteViews: RemoteViews, config: NotificationConfig): NotificationCompat.Builder {
@@ -204,6 +210,9 @@ class AnimatedNotificationManager(
             .setOnlyAlertOnce(true)
             .setAutoCancel(true)
             .setDeleteIntent(onDismissPendingIntent)
+            .apply {
+              config.subtitle?.let { setSubText(it) }
+            }
             .setContentIntent(pendingIntent)
 
 

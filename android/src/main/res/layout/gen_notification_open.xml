@@ -8,58 +8,50 @@
     android:orientation="vertical"
     android:id="@+id/linearLayout">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+       <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="95"
-            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/simpleChronometer"
             android:orientation="vertical"
-            >
+            android:layout_marginEnd="8dp">
+
             <TextView
                 android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                style="@style/TextAppearance.Compat.Notification.Title"
-                />
+                style="@style/TextAppearance.Compat.Notification.Title" />
 
             <TextView
-                android:id="@+id/subtitle"
+                android:id="@+id/body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="4"
-                style="@style/TextAppearance.Compat.Notification"
-
-                />
-
-
+                style="@style/TextAppearance.Compat.Notification" />
         </LinearLayout>
-
 
         <Chronometer
             android:id="@+id/simpleChronometer"
             style="@style/TextAppearance.Compat.Notification.Title"
-            android:layout_weight="5"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="right|center_vertical"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
             android:maxLines="1"
             android:text="timer"
-
             android:textSize="20dp" />
-    </LinearLayout>
-
+    </RelativeLayout>
     <FrameLayout
         android:id="@+id/viewFlipperContainer"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:padding="10dp"
         android:clipChildren="true"
         android:clipToOutline="true"
+        android:layout_marginTop="5dp"
         android:background="@drawable/border">
 
         <ViewFlipper

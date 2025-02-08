@@ -53,6 +53,7 @@ const CustomNotificationModule = NativeModules.CustomNotificationModule
     );
 export function TimerNotification(a) {
   const data = a;
+  if(data?.date)
   data.date = parseDate(data.date);
 
   if (Platform.OS === 'android')

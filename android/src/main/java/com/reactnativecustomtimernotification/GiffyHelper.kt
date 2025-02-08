@@ -12,92 +12,167 @@ import java.io.InputStream
 import java.io.IOException
 import kotlin.math.min
 
-private suspend fun fetchGifFromUrl(gifUrl: String): InputStream = withContext(Dispatchers.IO) {
-    Log.d("GifProcessor", "Fetching GIF from URL: $gifUrl")
-
-    val client = OkHttpClient.Builder()
-        .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-        .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
-        .build()
-
-    val request = Request.Builder().url(gifUrl).build()
-
-    val response = client.newCall(request).execute()
-    if (!response.isSuccessful) {
-        throw IOException("Failed to download GIF: ${response.message}")
+class GifProcessor {
+    companion object {
+        private const val TAG = "GifProcessor"
+        private const val MAX_FRAMES = 50
+        private const val MIN_FRAME_INTERVAL = 100
+        private const val MAX_DIMENSION = 1024
+        private const val BYTES_PER_PIXEL = 4L
     }
 
-    response.body?.byteStream() ?: throw IOException("No response body available")
-}
+    suspend fun fetchGifFromUrl(gifUrl: String): InputStream = withContext(Dispatchers.IO) {
+        Log.d(TAG, "Starting GIF fetch from URL: $gifUrl")
 
-private suspend fun gifToFrames(gifInputStream: InputStream, memoryLimitMB: Int = 2): List<Bitmap> = withContext(Dispatchers.Default) {
-    Log.d("GifProcessor", "Processing GIF to extract frames")
+        val client = OkHttpClient.Builder()
+            .connectTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .readTimeout(30, java.util.concurrent.TimeUnit.SECONDS)
+            .build()
 
-    val frames = mutableListOf<Bitmap>()
-    val movie = Movie.decodeStream(gifInputStream) ?: throw IllegalArgumentException("Failed to decode GIF")
+        try {
+            Log.d(TAG, "Creating request...")
+            val request = Request.Builder()
+                .url(gifUrl)
+                .build()
 
-    val width = movie.width()
-    val height = movie.height()
-    val duration = movie.duration()
+            Log.d(TAG, "Executing request...")
+            val response = client.newCall(request).execute()
 
-    if (duration <= 0) throw IllegalArgumentException("Invalid GIF duration")
+            Log.d(TAG, "Response received. Success: ${response.isSuccessful}, Code: ${response.code}")
+            Log.d(TAG, "Response headers: ${response.headers}")
 
-    val maxFrames = 50
-    val frameInterval = (duration / maxFrames).coerceAtLeast(100)
-    val maxDimension = 1024
-
-    val scaledWidth = width.coerceAtMost(maxDimension)
-    val scaledHeight = height.coerceAtMost(maxDimension)
-
-    val bytesPerFrame = scaledWidth * scaledHeight * 4L
-    val memoryLimitBytes = memoryLimitMB * 1024L * 1024L
-    val maxFramesForMemory = min((memoryLimitBytes / bytesPerFrame).toInt(), maxFrames)
-
-    Log.d("GifProcessor", "Memory limit allows for $maxFramesForMemory frames")
-
-    val bitmap = Bitmap.createBitmap(scaledWidth, scaledHeight, Bitmap.Config.ARGB_8888)
-    val canvas = android.graphics.Canvas(bitmap)
-
-    var currentMemoryUsage = 0L
-
-    try {
-        var time = 0
-        while (time < duration && frames.size < maxFramesForMemory) {
-            yield()
-
-            if (currentMemoryUsage + bytesPerFrame > memoryLimitBytes) {
-                Log.d("GifProcessor", "Memory limit reached, stopping frame extraction")
-                break
+            if (!response.isSuccessful) {
+                throw IOException("HTTP error! Status: ${response.code}, Message: ${response.message}")
             }
 
-            movie.setTime(time)
-            canvas.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR)
-            movie.draw(canvas, 0f, 0f)
+            val contentType = response.header("Content-Type")
+            Log.d(TAG, "Content-Type: $contentType")
 
-            val frameBitmap = Bitmap.createBitmap(bitmap)
-            frames.add(frameBitmap)
+            val contentLength = response.header("Content-Length")
+            Log.d(TAG, "Content-Length: $contentLength")
 
-            // Update current memory usage for each frame added
-            currentMemoryUsage += bytesPerFrame
-            time += frameInterval
+            val body = response.body
+            if (body == null) {
+                Log.e(TAG, "Response body is null!")
+                throw IOException("No response body available")
+            }
+
+            Log.d(TAG, "Successfully retrieved response body")
+            return@withContext body.byteStream()
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Error during GIF fetch: ${e.javaClass.simpleName} - ${e.message}")
+            e.printStackTrace()
+            throw e
         }
-    } finally {
-        gifInputStream.close()
-        bitmap.recycle()
     }
 
-    Log.d("GifProcessor", "Extracted ${frames.size} frames from GIF, using approximately ${currentMemoryUsage / 1024 / 1024}MB")
-    frames
-}
+    private suspend fun gifToFrames(
+        gifInputStream: InputStream,
+        memoryLimitMB: Int = 2
+    ): List<Bitmap> = withContext(Dispatchers.Default) {
+        Log.d(TAG, "Processing GIF to extract frames")
 
-// Main entry point to process GIF from URL
-suspend fun processGif(gifUrl: String, memoryLimitMB: Int = 2): List<Bitmap> = withContext(Dispatchers.IO) {
-    try {
-        fetchGifFromUrl(gifUrl).use { gifInputStream ->
-            gifToFrames(gifInputStream, memoryLimitMB)
+        val movie = Movie.decodeStream(gifInputStream)
+            ?: throw IllegalArgumentException("Failed to decode GIF")
+
+        val scaledDimensions = calculateScaledDimensions(movie.width(), movie.height())
+        val bytesPerFrame = scaledDimensions.first * scaledDimensions.second * BYTES_PER_PIXEL
+        val maxFramesForMemory = calculateMaxFrames(bytesPerFrame, memoryLimitMB)
+
+        Log.d(TAG, "Memory limit allows for $maxFramesForMemory frames")
+
+        val frames = mutableListOf<Bitmap>()
+        var currentMemoryUsage = 0L
+
+        try {
+            val bitmap = Bitmap.createBitmap(
+                scaledDimensions.first,
+                scaledDimensions.second,
+                Bitmap.Config.ARGB_8888
+            )
+            val canvas = android.graphics.Canvas(bitmap)
+
+            extractFrames(
+                movie,
+                canvas,
+                bitmap,
+                frames,
+                maxFramesForMemory,
+                bytesPerFrame,
+                memoryLimitMB,
+                currentMemoryUsage
+            )
+        } finally {
+            gifInputStream.close()
         }
-    } catch (e: Exception) {
-        Log.e("GifProcessor", "Error processing GIF: ${e.message}", e)
-        throw e
+
+        Log.d(TAG, "Extracted ${frames.size} frames from GIF")
+        frames
     }
+
+    private fun calculateScaledDimensions(width: Int, height: Int): Pair<Int, Int> {
+        val scaledWidth = width.coerceAtMost(MAX_DIMENSION)
+        val scaledHeight = height.coerceAtMost(MAX_DIMENSION)
+        return Pair(scaledWidth, scaledHeight)
+    }
+
+    private fun calculateMaxFrames(bytesPerFrame: Long, memoryLimitMB: Int): Int {
+        val memoryLimitBytes = memoryLimitMB * 1024L * 1024L
+        return min((memoryLimitBytes / bytesPerFrame).toInt(), MAX_FRAMES)
+    }
+
+    private suspend fun extractFrames(
+        movie: Movie,
+        canvas: android.graphics.Canvas,
+        bitmap: Bitmap,
+        frames: MutableList<Bitmap>,
+        maxFramesForMemory: Int,
+        bytesPerFrame: Long,
+        memoryLimitMB: Int,
+        currentMemoryUsage: Long
+    ) {
+        val duration = movie.duration().takeIf { it > 0 }
+            ?: throw IllegalArgumentException("Invalid GIF duration")
+
+        val frameInterval = (duration / MAX_FRAMES).coerceAtLeast(MIN_FRAME_INTERVAL)
+        val memoryLimitBytes = memoryLimitMB * 1024L * 1024L
+        var time = 0
+        var updatedMemoryUsage = currentMemoryUsage
+
+        try {
+            while (time < duration && frames.size < maxFramesForMemory) {
+                yield()
+
+                if (updatedMemoryUsage + bytesPerFrame > memoryLimitBytes) {
+                    Log.d(TAG, "Memory limit reached, stopping frame extraction")
+                    break
+                }
+
+                movie.setTime(time)
+                canvas.drawColor(0, android.graphics.PorterDuff.Mode.CLEAR)
+                movie.draw(canvas, 0f, 0f)
+
+                val frameBitmap = Bitmap.createBitmap(bitmap)
+                frames.add(frameBitmap)
+
+                updatedMemoryUsage += bytesPerFrame
+                time += frameInterval
+            }
+        } finally {
+            bitmap.recycle()
+        }
+    }
+
+    suspend fun processGif(gifUrl: String, memoryLimitMB: Int = 2): List<Bitmap> =
+        withContext(Dispatchers.IO) {
+            try {
+                fetchGifFromUrl(gifUrl).use { gifInputStream ->
+                    gifToFrames(gifInputStream, memoryLimitMB)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error processing GIF: ${e.message}", e)
+                throw e
+            }
+        }
 }
