@@ -54,29 +54,47 @@ var removedNotification = false;
         return "CustomTimerNotification"
     }
 
- 
     @ReactMethod
-    fun TimerNotification(objectData:ReadableMap) {
-      val payload = objectData.getString(Constants.NOTIFICATION.PAYLOAD);
-      val title = objectData.getString(Constants.NOTIFICATION.TITLE);
-      val body = objectData.getString(Constants.NOTIFICATION.BODY);
-      val id = objectData.getInt(Constants.NOTIFICATION.ID);
-      val gifUrl =  objectData.getString(Constants.NOTIFICATION.GIFFY_URl)
-      val notificationHelper = AnimatedNotificationManager(myContext)
-
-      val datetime = objectData.getString("date")
-      val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH)
-
-      val startTime = SystemClock.elapsedRealtime()
-      val endTime: Calendar = Calendar.getInstance()
-      endTime.time = sdf.parse(datetime)
-
-      val now = Date()
-      val elapsed: Long = now.getTime() - endTime.timeInMillis
-      val remainingTime = startTime - elapsed
-
-      notificationHelper.showAnimatedNotification(NotificationConfig(gifUrl = gifUrl, title=title,  subtitle=body, payload=payload, notificationId=id, countdownDuration = remainingTime))
+    fun TimerNotification(objectData: ReadableMap) {
+        val payload = if (objectData.hasKey(Constants.NOTIFICATION.PAYLOAD)) objectData.getString(Constants.NOTIFICATION.PAYLOAD) else ""
+        val title = if (objectData.hasKey(Constants.NOTIFICATION.TITLE)) objectData.getString(Constants.NOTIFICATION.TITLE) else "Default Title"
+        val body = if (objectData.hasKey(Constants.NOTIFICATION.BODY)) objectData.getString(Constants.NOTIFICATION.BODY) else "Default Body"
+        val subtitle = if (objectData.hasKey("subtitle")) objectData.getString("subtitle") else null
+        val id = if (objectData.hasKey(Constants.NOTIFICATION.ID)) objectData.getInt(Constants.NOTIFICATION.ID) else 0
+        val gifUrl = if (objectData.hasKey(Constants.NOTIFICATION.GIFFY_URl)) objectData.getString(Constants.NOTIFICATION.GIFFY_URl) else null
+    
+        val datetime = if (objectData.hasKey("date")) objectData.getString("date") else null
+        val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.ENGLISH)
+    
+        val endTime: Calendar = Calendar.getInstance()
+        try {
+            if (!datetime.isNullOrEmpty()) {
+                endTime.time = sdf.parse(datetime) ?: Date()
+            }
+        } catch (e: Exception) {
+            Log.e("TimerNotification", "Date parsing failed: ${e.message}")
+            endTime.time = Date()  
+        }
+    
+        val startTime = SystemClock.elapsedRealtime()
+        val now = System.currentTimeMillis()
+        val elapsed: Long = now - endTime.timeInMillis
+        val remainingTime = maxOf(startTime - elapsed, 0L)  
+    
+        val notificationHelper = AnimatedNotificationManager(myContext)
+        notificationHelper.showAnimatedNotification(
+            NotificationConfig(
+                gifUrl = gifUrl,
+                title = title,
+                subtitle = subtitle,
+                body = body,
+                payload = payload,
+                notificationId = id,
+                countdownDuration = remainingTime
+            )
+        )
     }
+    
 
 
   @ReactMethod
